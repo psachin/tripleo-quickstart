@@ -1,0 +1,54 @@
+# Deploy an HA openstack environment.
+
+# This enables TLS for the undercloud which will also make haproxy bind to the
+# configured public-vip and admin-vip.
+undercloud_generate_service_certificate: True
+
+# We don't need introspection in a virtual environment (because we are
+# creating all the "hardware" we really know the necessary
+# information).
+step_introspect: false
+
+# Tell tripleo about our environment.
+network_isolation: true
+network_isolation_type: 'single-nic-vlans'
+extra_args: >-
+  --ntp-server pool.ntp.org
+test_ping: true
+enable_pacemaker: true
+
+# This config is extremely resource intensive, so we disable telemetry
+# in order to reduce the overall memory footprint
+# This is not required in newton
+#telemetry_args: >-
+#   {% if release != 'newton' %}
+#   -e {{ overcloud_templates_path }}/environments/disable-telemetry.yaml
+#   {% endif %}
+
+run_tempest: false
+
+# options below direct automatic doc generation by tripleo-collect-logs
+artcl_gen_docs: true
+artcl_create_docs_payload:
+  included_deployment_scripts:
+    - undercloud-install
+    - overcloud-custom-tht-script
+    - overcloud-prep-flavors
+    - overcloud-prep-images
+    - overcloud-prep-network
+    - overcloud-deploy
+    - overcloud-deploy-post
+    - overcloud-validate
+  included_static_docs:
+    - env-setup-virt
+  table_of_contents:
+    - env-setup-virt
+    - undercloud-install
+    - overcloud-custom-tht-script
+    - overcloud-prep-flavors
+    - overcloud-prep-images
+    - overcloud-prep-network
+    - overcloud-deploy
+    - overcloud-deploy-post
+    - overcloud-validate
+
